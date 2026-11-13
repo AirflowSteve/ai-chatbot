@@ -125,6 +125,5 @@ def reply_func(message):
     save_message(database_name, message, format_message("assistant", response))
     bot.send_message(message.chat.id, response)
 
-
-bot.infinity_polling()
+bot.infinity_polling(123)
 
