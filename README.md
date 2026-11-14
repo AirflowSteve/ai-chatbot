@@ -24,7 +24,7 @@ PASSWORD="Password"
 An example of an env file can also be seen in the repository 
 ___
 ## Usage
-___
+
 
 The bot accepts commands like `/start` or `/help` to register a user, `/admin` to check the admin privilege of a user, which is unlocked with `/admin <password>` message, the password is stored in the `.env` file.
 
