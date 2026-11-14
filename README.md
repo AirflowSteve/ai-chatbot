@@ -15,6 +15,8 @@ You will also need to create and configure an `.env` file:
 ```env
 OPENROUTER_KEY="key from openrouter"
 BOT_API="telegram API Key"
+BASE_URL="url_for_openAI_SDK"
+MODEL_NAME="name of the model that you intend to run"
 DATABASE_NAME="chatbot.db" (default name)
 PASSWORD="Password"
 ```

@@ -3,6 +3,7 @@ import telebot
 import json
 
 
+
 from database.queries import get_messages, save_message, initiate_database, is_user_admin, make_admin, create_user, see_users, reset_database, see_messages
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -23,11 +24,14 @@ openrouter_API = os.environ.get("OPENROUTER_KEY")
 bot_API = os.environ.get("BOT_API")
 database_name = os.environ.get("DATABASE_NAME")
 password = os.environ.get("PASSWORD")
+base_URL = os.environ.get("BASE_URL")
+model = os.environ.get("MODEL_NAME")
 
 initiate_database(database_name)
 
+
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
+    base_url=base_URL,
     api_key=openrouter_API,
 )
 
@@ -119,7 +123,7 @@ def reply_func(message):
     msg_text = format_message("user", message.text)
     save_message(database_name, message, msg_text)
 
-    response = generate_content(client, messages)
+    response = generate_content(model, client, messages)
     messages.append(create_msg("assistant", response))
 
     save_message(database_name, message, format_message("assistant", response))

@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "ollama>=0.6.3",
     "openai>=3.42.1",
     "psycopg>=3.3.7",
     "python-dotenv>=1.2.4",
