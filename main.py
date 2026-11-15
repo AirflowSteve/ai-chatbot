@@ -1,6 +1,7 @@
 import os
 import telebot
 import json
+import requests
 
 
 
@@ -24,8 +25,20 @@ openrouter_API = os.environ.get("OPENROUTER_KEY")
 bot_API = os.environ.get("BOT_API")
 database_name = os.environ.get("DATABASE_NAME")
 password = os.environ.get("PASSWORD")
-base_URL = os.environ.get("BASE_URL")
+base_URL = os.environ.get("BASE_URL_LOCAL")
 model = os.environ.get("MODEL_NAME")
+
+try:
+    response = requests.request(
+        "GET",
+        base_URL,
+        timeout=3.0
+    )
+except requests.ConnectionError:
+    base_URL = os.environ.get("BASE_URL")
+
+
+print(f"model: {model}\nbase_url: {base_URL}",)
 
 initiate_database(database_name)
 
@@ -105,6 +118,7 @@ def help_func(message):
 @bot.message_handler(content_types=['text'])
 def reply_func(message):
     messages = []
+    
     if len(get_messages(database_name, message)) < 1:
         try:
             create_user(database_name, message)
@@ -122,6 +136,7 @@ def reply_func(message):
    
     msg_text = format_message("user", message.text)
     save_message(database_name, message, msg_text)
+    
 
     response = generate_content(model, client, messages)
     messages.append(create_msg("assistant", response))
@@ -129,5 +144,5 @@ def reply_func(message):
     save_message(database_name, message, format_message("assistant", response))
     bot.send_message(message.chat.id, response)
 
-bot.infinity_polling(123)
+bot.polling(non_stop=True)
 
