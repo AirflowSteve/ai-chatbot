@@ -23,10 +23,16 @@ def format_message(role, content):
 load_dotenv()
 openrouter_API = os.environ.get("OPENROUTER_KEY")
 bot_API = os.environ.get("BOT_API")
-database_name = os.environ.get("DATABASE_NAME")
-password = os.environ.get("PASSWORD")
+
+model_cloud = os.environ.get("MODEL_CLOUD")
+base_URL_cloud = os.environ.get("BASE_URL_CLOUD")
+
 base_URL = os.environ.get("BASE_URL_LOCAL")
 model = os.environ.get("MODEL_NAME")
+
+
+database_name = os.environ.get("DATABASE_NAME")
+password = os.environ.get("PASSWORD")
 
 try:
     response = requests.request(
@@ -35,7 +41,7 @@ try:
         timeout=3.0
     )
 except requests.ConnectionError:
-    base_URL = os.environ.get("BASE_URL")
+    base_URL = os.environ.get("BASE_URL_TAILSCALE")
 
 
 print(f"model: {model}\nbase_url: {base_URL}",)
@@ -46,6 +52,11 @@ initiate_database(database_name)
 client = OpenAI(
     base_url=base_URL,
     api_key=openrouter_API,
+)
+
+client_cloud = OpenAI(
+    base_url=base_URL_cloud,
+    api_key=openrouter_API
 )
 
 
@@ -137,12 +148,15 @@ def reply_func(message):
     msg_text = format_message("user", message.text)
     save_message(database_name, message, msg_text)
     
-
-    response = generate_content(model, client, messages)
+    try:
+        response = generate_content(model, client, messages)
+    except Exception as e:
+        response = generate_content(model_cloud, client_cloud, messages)
+        
     messages.append(create_msg("assistant", response))
 
     save_message(database_name, message, format_message("assistant", response))
     bot.send_message(message.chat.id, response)
 
-bot.polling(non_stop=True)
+bot.infinity_polling(123)
 
